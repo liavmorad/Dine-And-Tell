@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
+import com.google.firebase.firestore.DocumentId
+
 @Entity(
     tableName = "experiences",
     foreignKeys = [
@@ -23,9 +25,11 @@ import androidx.room.PrimaryKey
 )
 data class Experience(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val restaurantId: String,
-    val userId: String,
-    val review: String,
+    @DocumentId val firestoreId: String? = null,
+    val restaurantId: String = "",
+    val userId: String = "",
+    val rating: Float = 0f,
+    val review: String = "",
     val imageUrl: String? = null,
-    val dateOfVisit: Long // Store as timestamp
+    val dateOfVisit: Long = 0L // Store as timestamp
 )
