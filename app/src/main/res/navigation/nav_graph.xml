@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/explorationFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.dine_and_tell.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_explorationFragment"
+            app:destination="@id/explorationFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/explorationFragment"
+        android:name="com.example.dine_and_tell.ExplorationFragment"
+        android:label="fragment_exploration"
+        tools:layout="@layout/fragment_exploration" />
+    <fragment
+        android:id="@+id/restaurantDetailsFragment"
+        android:name="com.example.dine_and_tell.RestaurantDetailsFragment"
+        android:label="fragment_restaurant_details"
+        tools:layout="@layout/fragment_restaurant_details" />
+    <fragment
+        android:id="@+id/addExperienceFragment"
+        android:name="com.example.dine_and_tell.AddExperienceFragment"
+        android:label="fragment_add_experience"
+        tools:layout="@layout/fragment_add_experience" />
+    <fragment
+        android:id="@+id/myExperiencesFragment"
+        android:name="com.example.dine_and_tell.MyExperiencesFragment"
+        android:label="fragment_my_experiences"
+        tools:layout="@layout/fragment_my_experiences" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.dine_and_tell.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>
