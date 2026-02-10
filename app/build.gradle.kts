@@ -26,6 +26,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -75,6 +79,10 @@ dependencies {
     // UI & Media
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.picasso)
+
+    // Networking - Retrofit & Gson
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
