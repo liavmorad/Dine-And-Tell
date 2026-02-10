@@ -9,6 +9,8 @@ data class Properties(
     val address: String?,
     @SerializedName("datasource")
     val datasource: DataSource?,
+    @SerializedName("categories")
+    val categories: List<String>?,
 )
 data class DataSource(
     @SerializedName("raw")

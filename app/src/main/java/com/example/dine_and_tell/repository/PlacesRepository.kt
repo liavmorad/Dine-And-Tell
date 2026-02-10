@@ -19,6 +19,7 @@ class PlacesRepository : PlacesDataSource {
             val lon = geometry.coordinates.getOrNull(0)
             val lat = geometry.coordinates.getOrNull(1)
             val imageUrl = properties.datasource?.raw?.image
+            val categories = properties.categories
 
             if (name != null && address != null && lon != null && lat != null) {
                 Place(
@@ -26,7 +27,8 @@ class PlacesRepository : PlacesDataSource {
                     address = address,
                     lat = lat,
                     lon = lon,
-                    imageUrl = imageUrl
+                    imageUrl = imageUrl,
+                    categories = categories
                 )
             } else {
                 null
