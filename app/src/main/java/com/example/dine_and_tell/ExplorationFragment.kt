@@ -4,12 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.dine_and_tell.adapter.FooterAdapter
 import com.example.dine_and_tell.adapter.RestaurantsAdapter
@@ -26,6 +27,15 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
     private lateinit var viewModel: ExplorationViewModel
     private lateinit var restaurantsAdapter: RestaurantsAdapter
     private lateinit var footerAdapter: FooterAdapter
+    private var currentFilter: String = ""
+    
+    private val cities = mapOf(
+        "Tel Aviv" to "place:51e8ea76261664414059036594d31e0b4040f00101f9015e18150000000000c00206920317d7aad79cd6bed790d791d799d791e28093d799d7a4d795",
+        "Haifa" to "place:512491d7b58180414059f475785d9a664040f00101f901702d150000000000c00206920308d797d799d7a4d794",
+        "Jerusalem" to "place:511aaac1903a9b414059cdd4a09009cc3f40f00101f901e613150000000000c0020692030ed799d7a8d795d7a9d79cd799d79d",
+        "Rishon LeZion" to "place:5120a1e86fa163414059ec31d17b74f93f40f00101f9012117150000000000c00206920315d7a8d790d7a9d795d79f20d79cd7a6d799d795d79f",
+        "Ramat Gan" to "place:512964441ff26941405984e0129106094040f00101f9015d18150000000000c0020692030bd7a8d79ed7aa20d792d79f"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +48,7 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupSpinner()
 
         val placesRepository = PlacesRepository()
         val viewModelFactory = ExplorationViewModelFactory(placesRepository)
@@ -66,15 +77,30 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
                 footerAdapter.setState(FooterAdapter.FooterState.Done)
             }
         }
+    }
+    
+    private fun setupSpinner() {
+        val cityNames = cities.keys.toTypedArray()
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_city, cityNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.citySpinner.adapter = adapter
 
-        // Example call to get places.
-        val filter = "place:51e8ea76261664414059036594d31e0b4040f00101f9015e18150000000000c00206920317d7aad79cd6bed790d791d799d791e28093d799d7a4d795"
-        viewModel.getPlaces(filter)
+        binding.citySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val cityName = parent.getItemAtPosition(position) as String
+                currentFilter = cities[cityName]!!
+                viewModel.getPlaces(currentFilter)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
     }
 
     private fun setupRecyclerView() {
         restaurantsAdapter = RestaurantsAdapter(mutableListOf(), this)
-        footerAdapter = FooterAdapter { viewModel.loadMorePlaces("place:51e8ea76261664414059036594d31e0b4040f00101f9015e18150000000000c00206920317d7aad79cd6bed790d791d799d791e28093d799d7a4d795") }
+        footerAdapter = FooterAdapter { viewModel.loadMorePlaces(currentFilter) }
         val concatAdapter = ConcatAdapter(restaurantsAdapter, footerAdapter)
 
         val gridLayoutManager = GridLayoutManager(context, 2)
@@ -94,7 +120,7 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     val totalItemCount = layoutManager.itemCount
                     if (lastVisibleItemPosition == totalItemCount - 1 && viewModel.isLoadingMore.value == false) {
-                        viewModel.loadMorePlaces("place:51e8ea76261664414059036594d31e0b4040f00101f9015e18150000000000c00206920317d7aad79cd6bed790d791d799d791e28093d799d7a4d795")
+                        viewModel.loadMorePlaces(currentFilter)
                     }
                 }
             })
