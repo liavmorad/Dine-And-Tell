@@ -11,7 +11,15 @@ data class Properties(
     val datasource: DataSource?,
     @SerializedName("categories")
     val categories: List<String>?,
+    @SerializedName("catering")
+    val catering: Catering?,
 )
+
+data class Catering(
+    @SerializedName("cuisine")
+    val cuisine: String?,
+)
+
 data class DataSource(
     @SerializedName("raw")
     val raw: Raw?,

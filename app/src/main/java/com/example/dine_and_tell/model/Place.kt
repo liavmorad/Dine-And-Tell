@@ -6,5 +6,6 @@ data class Place(
     val lat: Double,
     val lon: Double,
     val imageUrl: String?,
-    val categories: List<String>?
+    val categories: List<String>?,
+    val cuisine: String?
 )

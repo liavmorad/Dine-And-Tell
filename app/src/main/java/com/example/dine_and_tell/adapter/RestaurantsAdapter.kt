@@ -53,9 +53,22 @@ class RestaurantsAdapter(
             } else {
                 val imageResource = when {
                     place.categories?.contains("catering.restaurant.pizza") == true -> R.drawable.pizza
+                    place.cuisine?.contains("pizza", ignoreCase = true) == true -> R.drawable.pizza
+                    place.cuisine?.contains("italian", ignoreCase = true) == true -> R.drawable.pizza
                     place.categories?.contains("catering.restaurant.burger") == true -> R.drawable.burger
+                    place.cuisine?.contains("burger", ignoreCase = true) == true -> R.drawable.burger
+                    place.cuisine?.contains("meat", ignoreCase = true) == true -> R.drawable.burger
+                    place.cuisine?.contains("steak_house", ignoreCase = true) == true -> R.drawable.burger
+                    place.cuisine?.contains("grill", ignoreCase = true) == true -> R.drawable.burger
                     place.categories?.contains("catering.restaurant.sushi") == true -> R.drawable.sushi
+                    place.categories?.contains("catering.restaurant.thai") == true -> R.drawable.sushi
+                    place.cuisine?.contains("sushi", ignoreCase = true) == true -> R.drawable.sushi
+                    place.cuisine?.contains("asian", ignoreCase = true) == true -> R.drawable.sushi
+                    place.cuisine?.contains("thai", ignoreCase = true) == true -> R.drawable.sushi
+                    place.cuisine?.contains("japanese", ignoreCase = true) == true -> R.drawable.sushi
                     place.categories?.contains("catering.cafe") == true -> R.drawable.cafe
+                    place.cuisine?.contains("cafe", ignoreCase = true) == true -> R.drawable.cafe
+                    place.cuisine?.contains("breakfast", ignoreCase = true) == true -> R.drawable.cafe
                     else -> R.drawable.default_restaurant
                 }
                 binding.restaurantImage.setImageResource(imageResource)
