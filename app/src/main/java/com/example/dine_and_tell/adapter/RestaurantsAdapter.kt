@@ -9,7 +9,7 @@ import com.example.dine_and_tell.model.Place
 import com.squareup.picasso.Picasso
 
 class RestaurantsAdapter(
-    private var places: List<Place>,
+    private var places: MutableList<Place>,
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<RestaurantsAdapter.RestaurantViewHolder>() {
 
@@ -25,8 +25,9 @@ class RestaurantsAdapter(
 
     override fun getItemCount() = places.size
 
-    fun updateData(newPlaces: List<Place>) {
-        places = newPlaces
+    fun setData(newPlaces: List<Place>) {
+        places.clear()
+        places.addAll(newPlaces)
         notifyDataSetChanged()
     }
 

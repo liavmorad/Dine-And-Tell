@@ -13,14 +13,43 @@ class ExplorationViewModel(private val placesRepository: PlacesRepository) : Vie
     private val _places = MutableLiveData<ApiResult<List<Place>>>()
     val places: LiveData<ApiResult<List<Place>>> = _places
 
-    fun getPlaces(filter: String, limit: Int) {
+    private val _isLoadingMore = MutableLiveData<Boolean>()
+    val isLoadingMore: LiveData<Boolean> = _isLoadingMore
+
+    private var currentPlaces = mutableListOf<Place>()
+    private var currentLimit = 20
+    private val limitIncrement = 20
+
+    fun getPlaces(filter: String) {
         viewModelScope.launch {
             _places.value = ApiResult.Loading
+            _isLoadingMore.value = false
             try {
-                val result = placesRepository.getPlaces(filter, limit)
-                _places.value = ApiResult.Success(result)
+                currentLimit = 20
+                val result = placesRepository.getPlaces(filter, currentLimit)
+                currentPlaces.clear()
+                currentPlaces.addAll(result)
+                _places.value = ApiResult.Success(currentPlaces)
             } catch (e: Exception) {
                 _places.value = ApiResult.Error(e)
+            }
+        }
+    }
+
+    fun loadMorePlaces(filter: String) {
+        viewModelScope.launch {
+            _isLoadingMore.value = true
+            try {
+                currentLimit += limitIncrement
+                val result = placesRepository.getPlaces(filter, currentLimit)
+                currentPlaces.clear()
+                currentPlaces.addAll(result)
+                _places.value = ApiResult.Success(currentPlaces)
+            } catch (e: Exception) {
+                // In case of error, post the old list
+                _places.value = ApiResult.Success(currentPlaces)
+            } finally {
+                _isLoadingMore.value = false
             }
         }
     }
