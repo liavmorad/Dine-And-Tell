@@ -20,12 +20,20 @@
         android:id="@+id/explorationFragment"
         android:name="com.example.dine_and_tell.ExplorationFragment"
         android:label="fragment_exploration"
-        tools:layout="@layout/fragment_exploration" />
+        tools:layout="@layout/fragment_exploration" >
+        <action
+            android:id="@+id/action_explorationFragment_to_restaurantDetailsFragment"
+            app:destination="@id/restaurantDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/restaurantDetailsFragment"
         android:name="com.example.dine_and_tell.RestaurantDetailsFragment"
         android:label="fragment_restaurant_details"
-        tools:layout="@layout/fragment_restaurant_details" />
+        tools:layout="@layout/fragment_restaurant_details" >
+        <argument
+            android:name="place"
+            app:argType="com.example.dine_and_tell.model.Place" />
+    </fragment>
     <fragment
         android:id="@+id/addExperienceFragment"
         android:name="com.example.dine_and_tell.AddExperienceFragment"

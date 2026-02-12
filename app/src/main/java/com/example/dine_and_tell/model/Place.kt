@@ -1,5 +1,9 @@
 package com.example.dine_and_tell.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Place(
     val name: String,
     val address: String,
@@ -8,4 +12,4 @@ data class Place(
     val imageUrl: String?,
     val categories: List<String>?,
     val cuisine: String?
-)
+) : Parcelable

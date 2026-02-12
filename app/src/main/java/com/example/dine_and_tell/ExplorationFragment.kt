@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -132,7 +133,8 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(place: Place) {
-        Toast.makeText(context, "Clicked on: ${place.name}", Toast.LENGTH_SHORT).show()
+        val action = ExplorationFragmentDirections.actionExplorationFragmentToRestaurantDetailsFragment(place)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
