@@ -58,13 +58,16 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
             when (result) {
                 is ApiResult.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
+                    binding.overlayView.visibility = View.VISIBLE
                 }
                 is ApiResult.Success -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.overlayView.visibility = View.GONE
                     restaurantsAdapter.setData(result.data)
                 }
                 is ApiResult.Error -> {
                     binding.progressBar.visibility = View.GONE
+                    binding.overlayView.visibility = View.GONE
                     Toast.makeText(requireContext(), "Error: ${result.exception.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -90,6 +93,7 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
                 val cityName = parent.getItemAtPosition(position) as String
                 currentFilter = cities[cityName]!!
                 viewModel.getPlaces(currentFilter)
+                binding.restaurantsRecyclerView.scrollToPosition(0)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
