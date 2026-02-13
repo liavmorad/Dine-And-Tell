@@ -33,12 +33,19 @@
         <argument
             android:name="place"
             app:argType="com.example.dine_and_tell.model.Place" />
+        <action
+            android:id="@+id/action_restaurantDetailsFragment_to_addExperienceFragment"
+            app:destination="@id/addExperienceFragment" />
     </fragment>
     <fragment
         android:id="@+id/addExperienceFragment"
         android:name="com.example.dine_and_tell.AddExperienceFragment"
         android:label="fragment_add_experience"
-        tools:layout="@layout/fragment_add_experience" />
+        tools:layout="@layout/fragment_add_experience" >
+        <argument
+            android:name="restaurantId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/myExperiencesFragment"
         android:name="com.example.dine_and_tell.MyExperiencesFragment"

@@ -13,6 +13,7 @@ import com.example.dine_and_tell.adapter.ExperienceAdapter
 import com.example.dine_and_tell.databinding.FragmentRestaurantDetailsBinding
 import com.example.dine_and_tell.firebase.FirebaseExperienceService
 import kotlinx.coroutines.launch
+import com.example.dine_and_tell.RestaurantDetailsFragmentDirections
 
 class RestaurantDetailsFragment : Fragment() {
     private var _binding: FragmentRestaurantDetailsBinding? = null
@@ -44,6 +45,11 @@ class RestaurantDetailsFragment : Fragment() {
         binding.backArrow.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.addExperienceFab.setOnClickListener {
+            val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(place.id)
+            findNavController().navigate(action)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -59,6 +65,13 @@ class RestaurantDetailsFragment : Fragment() {
         lifecycleScope.launch {
             val experiences = firebaseExperienceService.getExperiencesByRestaurantId(restaurantId)
             experienceAdapter.updateData(experiences)
+            if (experiences.isEmpty()) {
+                binding.noExperiencesMessage.visibility = View.VISIBLE
+                binding.experiencesRecyclerView.visibility = View.GONE
+            } else {
+                binding.noExperiencesMessage.visibility = View.GONE
+                binding.experiencesRecyclerView.visibility = View.VISIBLE
+            }
             binding.loadingSpinner.visibility = View.GONE
         }
     }
