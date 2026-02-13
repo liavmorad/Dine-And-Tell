@@ -3,6 +3,8 @@ package com.example.dine_and_tell.model
 import com.google.gson.annotations.SerializedName
 
 data class Properties(
+    @SerializedName("place_id")
+    val id: String,
     @SerializedName("name")
     val name: String?,
     @SerializedName("formatted")
