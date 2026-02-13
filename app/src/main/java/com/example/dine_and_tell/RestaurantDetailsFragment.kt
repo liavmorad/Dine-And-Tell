@@ -36,8 +36,8 @@ class RestaurantDetailsFragment : Fragment() {
         val place = args.place
         binding.restaurantName.text = place.name
         binding.restaurantAddress.text = "Address: ${place.address}"
-        binding.restaurantPhone.text = "Phone: ${place.phone ?: "N/A"}"
-        binding.restaurantOpeningHours.text = "Opening Hours: ${place.openingHours ?: "N/A"}"
+        binding.restaurantPhone.text = "Phone: ${place.phone ?: "-"}"
+        binding.restaurantOpeningHours.text = "Opening Hours: ${place.openingHours ?: "-"}"
 
         setupRecyclerView()
         loadExperiences(place.id)
