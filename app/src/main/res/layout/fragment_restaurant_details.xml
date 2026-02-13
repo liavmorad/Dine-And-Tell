@@ -31,4 +31,50 @@
         app:layout_constraintTop_toTopOf="@+id/back_arrow"
         tools:text="Restaurant Name" />
 
+    <TextView
+        android:id="@+id/restaurant_details_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Restaurant Details"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/back_arrow"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_name" />
+
+    <TextView
+        android:id="@+id/restaurant_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/restaurant_details_subtitle"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_details_subtitle"
+        tools:text="123 Main St, Anytown, USA" />
+
+    <TextView
+        android:id="@+id/restaurant_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/restaurant_address"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_address"
+        tools:text="555-123-4567" />
+
+    <TextView
+        android:id="@+id/restaurant_opening_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/restaurant_phone"
+        app:layout_constraintTop_toBottomOf="@+id/restaurant_phone"
+        tools:text="Mon-Fri: 9am - 10pm" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

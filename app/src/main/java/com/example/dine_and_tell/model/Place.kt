@@ -11,5 +11,7 @@ data class Place(
     val lon: Double,
     val imageUrl: String?,
     val categories: List<String>?,
-    val cuisine: String?
+    val cuisine: String?,
+    val phone: String?,
+    val openingHours: String?
 ) : Parcelable

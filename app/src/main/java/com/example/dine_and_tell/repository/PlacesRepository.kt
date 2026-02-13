@@ -21,6 +21,9 @@ class PlacesRepository : PlacesDataSource {
             val imageUrl = properties.datasource?.raw?.image
             val categories = properties.categories
             val cuisine = properties.catering?.cuisine
+            val openingHours = properties.openingHours
+            val phone = properties.datasource?.raw?.phone
+
 
             if (name != null && address != null && lon != null && lat != null) {
                 Place(
@@ -30,7 +33,9 @@ class PlacesRepository : PlacesDataSource {
                     lon = lon,
                     imageUrl = imageUrl,
                     categories = categories,
-                    cuisine = cuisine
+                    cuisine = cuisine,
+                    openingHours = openingHours,
+                    phone = phone
                 )
             } else {
                 null
