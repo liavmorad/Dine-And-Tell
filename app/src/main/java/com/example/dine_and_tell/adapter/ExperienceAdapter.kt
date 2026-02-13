@@ -16,7 +16,7 @@ class ExperienceAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExperienceViewHolder {
         val binding =
             ExperienceCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExperienceViewHolder(binding)
+        return ExperienceViewHolder(binding, onDeleteClicked)
     }
 
     override fun onBindViewHolder(holder: ExperienceViewHolder, position: Int) {
@@ -30,7 +30,7 @@ class ExperienceAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ExperienceViewHolder(private val binding: ExperienceCardBinding) :
+    inner class ExperienceViewHolder(private val binding: ExperienceCardBinding, private val onDeleteClicked: ((String) -> Unit)?) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(experience: Experience) {
             binding.experienceTitle.text = "${experience.userId} says"

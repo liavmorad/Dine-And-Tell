@@ -55,9 +55,11 @@ class RestaurantDetailsFragment : Fragment() {
     }
 
     private fun loadExperiences(restaurantId: String) {
+        binding.loadingSpinner.visibility = View.VISIBLE
         lifecycleScope.launch {
             val experiences = firebaseExperienceService.getExperiencesByRestaurantId(restaurantId)
             experienceAdapter.updateData(experiences)
+            binding.loadingSpinner.visibility = View.GONE
         }
     }
 
