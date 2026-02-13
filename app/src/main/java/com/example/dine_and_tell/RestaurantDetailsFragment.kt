@@ -5,15 +5,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.dine_and_tell.adapter.ExperienceAdapter
 import com.example.dine_and_tell.databinding.FragmentRestaurantDetailsBinding
+import com.example.dine_and_tell.firebase.FirebaseExperienceService
+import kotlinx.coroutines.launch
 
 class RestaurantDetailsFragment : Fragment() {
     private var _binding: FragmentRestaurantDetailsBinding? = null
     private val binding get() = _binding!!
 
     private val args: RestaurantDetailsFragmentArgs by navArgs()
+    private lateinit var experienceAdapter: ExperienceAdapter
+    private val firebaseExperienceService = FirebaseExperienceService()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,8 +38,26 @@ class RestaurantDetailsFragment : Fragment() {
         binding.restaurantPhone.text = "Phone: ${place.phone ?: "N/A"}"
         binding.restaurantOpeningHours.text = "Opening Hours: ${place.openingHours ?: "N/A"}"
 
+        setupRecyclerView()
+        loadExperiences(place.id)
+
         binding.backArrow.setOnClickListener {
             findNavController().popBackStack()
+        }
+    }
+
+    private fun setupRecyclerView() {
+        experienceAdapter = ExperienceAdapter(emptyList())
+        binding.experiencesRecyclerView.apply {
+            adapter = experienceAdapter
+            layoutManager = LinearLayoutManager(context)
+        }
+    }
+
+    private fun loadExperiences(restaurantId: String) {
+        lifecycleScope.launch {
+            val experiences = firebaseExperienceService.getExperiencesByRestaurantId(restaurantId)
+            experienceAdapter.updateData(experiences)
         }
     }
 

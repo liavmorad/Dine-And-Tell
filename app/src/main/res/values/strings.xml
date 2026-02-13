@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Dine-And-Tell</string>
+    <string name="delete_experience">Delete experience</string>
 </resources>
