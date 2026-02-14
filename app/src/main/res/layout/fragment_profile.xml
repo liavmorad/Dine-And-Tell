@@ -33,17 +33,33 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_title"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedSquareImageView" />
 
-    <TextView
+    <ImageView
+        android:id="@+id/edit_profile_image_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:src="@android:drawable/ic_menu_edit"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+        app:layout_constraintEnd_toEndOf="@+id/profile_image"
+        tools:visibility="visible" />
+
+    <EditText
         android:id="@+id/profile_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/profile_default_username"
+        android:hint="@string/profile_default_username"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:enabled="false"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <Button
@@ -58,6 +74,41 @@
         app:layout_constraintBottom_toBottomOf="@+id/profile_title"
         app:layout_constraintStart_toEndOf="@+id/profile_title"
         app:layout_constraintTop_toTopOf="@+id/profile_title" />
+
+    <LinearLayout
+        android:id="@+id/edit_buttons_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_username"
+        tools:visibility="visible">
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/cancel_button"
+            android:textColor="#C67C4E"
+            app:backgroundTint="@android:color/white"
+            app:cornerRadius="24dp"
+            app:strokeColor="#C67C4E"
+            app:strokeWidth="1dp" />
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/save_button"
+            android:layout_marginStart="8dp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#C67C4E"
+            app:cornerRadius="24dp" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

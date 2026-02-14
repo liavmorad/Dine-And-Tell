@@ -6,4 +6,6 @@
     <string name="profile_title">My Profile</string>
     <string name="edit_profile_button">Edit</string>
     <string name="profile_default_username">John Doe</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="save_button">Save</string>
 </resources>
