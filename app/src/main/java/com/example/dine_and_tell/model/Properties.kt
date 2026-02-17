@@ -3,6 +3,8 @@ package com.example.dine_and_tell.model
 import com.google.gson.annotations.SerializedName
 
 data class Properties(
+    @SerializedName("place_id")
+    val id: String,
     @SerializedName("name")
     val name: String?,
     @SerializedName("formatted")
@@ -13,6 +15,8 @@ data class Properties(
     val categories: List<String>?,
     @SerializedName("catering")
     val catering: Catering?,
+    @SerializedName("opening_hours")
+    val openingHours: String?,
 )
 
 data class Catering(
@@ -27,4 +31,6 @@ data class DataSource(
 data class Raw(
     @SerializedName("image")
     val image: String?,
+    @SerializedName("phone")
+    val phone: String?,
 )

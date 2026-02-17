@@ -1,19 +1,22 @@
 package com.example.dine_and_tell.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.dine_and_tell.databinding.ExperienceItemBinding
+import com.example.dine_and_tell.databinding.ExperienceCardBinding
 import com.example.dine_and_tell.model.Experience
+import com.squareup.picasso.Picasso
 
 class ExperienceAdapter(
     private var experiences: List<Experience>,
-    private val onDeleteClick: (String) -> Unit
+    private val onDeleteClicked: ((String) -> Unit)? = null
 ) : RecyclerView.Adapter<ExperienceAdapter.ExperienceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExperienceViewHolder {
-        val binding = ExperienceItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExperienceViewHolder(binding)
+        val binding =
+            ExperienceCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ExperienceViewHolder(binding, onDeleteClicked)
     }
 
     override fun onBindViewHolder(holder: ExperienceViewHolder, position: Int) {
@@ -27,12 +30,22 @@ class ExperienceAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ExperienceViewHolder(private val binding: ExperienceItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ExperienceViewHolder(private val binding: ExperienceCardBinding, private val onDeleteClicked: ((String) -> Unit)?) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(experience: Experience) {
-            binding.reviewText.text = experience.review
-            binding.ratingText.text = "Rating: ${experience.rating}"
-            binding.deleteButton.setOnClickListener {
-                experience.firestoreId?.let { id -> onDeleteClick(id) }
+            binding.experienceTitle.text = "${experience.userId} says"
+            binding.experienceDescription.text = experience.review
+            experience.imageUrl.let {
+                Picasso.get().load(it).into(binding.experienceImage)
+            }
+
+            if (onDeleteClicked != null && experience.firestoreId != null) {
+                binding.deleteIcon.visibility = View.VISIBLE
+                binding.deleteIcon.setOnClickListener {
+                    onDeleteClicked.invoke(experience.firestoreId)
+                }
+            } else {
+                binding.deleteIcon.visibility = View.GONE
             }
         }
     }

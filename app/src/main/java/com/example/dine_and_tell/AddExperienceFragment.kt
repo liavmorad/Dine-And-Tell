@@ -9,6 +9,7 @@ import com.example.dine_and_tell.databinding.FragmentAddExperienceBinding
 
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
 
@@ -16,6 +17,7 @@ class AddExperienceFragment : Fragment() {
     private var _binding: FragmentAddExperienceBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ExperienceViewModel by viewModels()
+    private val args: AddExperienceFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,8 +35,7 @@ class AddExperienceFragment : Fragment() {
             val rating = binding.ratingBar.rating
 
             if (review.isNotEmpty()) {
-                // Hardcoded values for demonstration
-                val restaurantId = "restaurant123"
+                val restaurantId = args.restaurantId
                 val userId = "user123"
 
                 val experience = Experience(

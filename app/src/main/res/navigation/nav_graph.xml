@@ -20,17 +20,32 @@
         android:id="@+id/explorationFragment"
         android:name="com.example.dine_and_tell.ExplorationFragment"
         android:label="fragment_exploration"
-        tools:layout="@layout/fragment_exploration" />
+        tools:layout="@layout/fragment_exploration" >
+        <action
+            android:id="@+id/action_explorationFragment_to_restaurantDetailsFragment"
+            app:destination="@id/restaurantDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/restaurantDetailsFragment"
         android:name="com.example.dine_and_tell.RestaurantDetailsFragment"
         android:label="fragment_restaurant_details"
-        tools:layout="@layout/fragment_restaurant_details" />
+        tools:layout="@layout/fragment_restaurant_details" >
+        <argument
+            android:name="place"
+            app:argType="com.example.dine_and_tell.model.Place" />
+        <action
+            android:id="@+id/action_restaurantDetailsFragment_to_addExperienceFragment"
+            app:destination="@id/addExperienceFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addExperienceFragment"
         android:name="com.example.dine_and_tell.AddExperienceFragment"
         android:label="fragment_add_experience"
-        tools:layout="@layout/fragment_add_experience" />
+        tools:layout="@layout/fragment_add_experience" >
+        <argument
+            android:name="restaurantId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/myExperiencesFragment"
         android:name="com.example.dine_and_tell.MyExperiencesFragment"

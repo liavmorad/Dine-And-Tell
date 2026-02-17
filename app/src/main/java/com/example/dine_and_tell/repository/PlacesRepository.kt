@@ -14,23 +14,26 @@ class PlacesRepository : PlacesDataSource {
         return featureCollection.features.mapNotNull { feature ->
             val properties = feature.properties
             val geometry = feature.geometry
+            val id = properties.id
             val name = properties.name
             val address = properties.address
-            val lon = geometry.coordinates.getOrNull(0)
-            val lat = geometry.coordinates.getOrNull(1)
             val imageUrl = properties.datasource?.raw?.image
             val categories = properties.categories
             val cuisine = properties.catering?.cuisine
+            val openingHours = properties.openingHours
+            val phone = properties.datasource?.raw?.phone
 
-            if (name != null && address != null && lon != null && lat != null) {
+
+            if (name != null && address != null) {
                 Place(
+                    id = id,
                     name = name,
                     address = address,
-                    lat = lat,
-                    lon = lon,
                     imageUrl = imageUrl,
                     categories = categories,
-                    cuisine = cuisine
+                    cuisine = cuisine,
+                    openingHours = openingHours,
+                    phone = phone
                 )
             } else {
                 null
