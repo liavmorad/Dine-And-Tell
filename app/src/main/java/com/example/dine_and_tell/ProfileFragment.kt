@@ -12,15 +12,14 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.dine_and_tell.databinding.FragmentProfileBinding
-import com.example.dine_and_tell.firebase.FirebaseUserService
 import com.example.dine_and_tell.model.User
+import com.example.dine_and_tell.viewmodel.UserViewModel
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
@@ -30,7 +29,7 @@ class ProfileFragment : Fragment() {
     private var selectedImageUri: Uri? = null
     private var currentUser: User? = null
 
-    private val userService = FirebaseUserService()
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreateView(
@@ -46,7 +45,19 @@ class ProfileFragment : Fragment() {
 
         // Initialize with default view mode
         toggleEditMode(false)
-        fetchUserData()
+
+        userViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                currentUser = user
+                updateUI(user)
+            } else {
+                val firebaseUser = FirebaseAuth.getInstance().currentUser
+
+                if (firebaseUser != null) {
+                    userViewModel.fetchUser(firebaseUser.uid)
+                }
+            }
+        }
 
         // Initialize ActivityResultLauncher for image picking
         pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -67,13 +78,7 @@ class ProfileFragment : Fragment() {
             isEditMode = false
             toggleEditMode(false)
             currentUser?.let { user ->
-                binding.profileUsername.setText(user.username)
-
-                if (!user.profilePictureUrl.isNullOrEmpty()) {
-                    Picasso.get().load(user.profilePictureUrl).placeholder(R.drawable.person).into(binding.profileImage)
-                } else {
-                    binding.profileImage.setImageResource(R.drawable.person)
-                }
+                updateUI(user)
             }
             selectedImageUri = null // Clear selected image
         }
@@ -91,26 +96,8 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun fetchUserData() {
-        val firebaseUser = FirebaseAuth.getInstance().currentUser
-
-        firebaseUser?.let {
-            lifecycleScope.launch {
-                val user = userService.getUser(it.uid)
-
-                if (user != null) {
-                    currentUser = user
-                    updateUI(user)
-                } else {
-                    Toast.makeText(requireContext(), "User profile not found!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
     private fun updateUI(user: User) {
         binding.profileUsername.setText(user.username)
-
         if (!user.profilePictureUrl.isNullOrEmpty()) {
             Picasso.get().load(user.profilePictureUrl).placeholder(R.drawable.person).into(binding.profileImage)
         } else {
@@ -126,21 +113,20 @@ class ProfileFragment : Fragment() {
             return
         }
 
-        lifecycleScope.launch {
-            currentUser?.let { user ->
-                // TODO: Handle image upload to Firebase Storage if selectedImageUri is not null
-                val updatedUser = user.copy(username = newUsername)
-                userService.updateUser(updatedUser)
-                currentUser = updatedUser
-                
-                isEditMode = false
-                toggleEditMode(false)
-                Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
-            }
+        currentUser?.let { user ->
+            // TODO: Handle image upload to Firebase Storage if selectedImageUri is not null
+
+            val updatedUser = user.copy(username = newUsername)
+            userViewModel.updateUser(updatedUser)
+
+            isEditMode = false
+            toggleEditMode(false)
+            Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun signOut() {
+        userViewModel.clear()
         AuthUI.getInstance()
             .signOut(requireContext())
             .addOnCompleteListener {

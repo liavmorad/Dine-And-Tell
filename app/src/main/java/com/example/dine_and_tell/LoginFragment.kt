@@ -8,22 +8,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
 import com.example.dine_and_tell.databinding.FragmentLoginBinding
+import com.example.dine_and_tell.viewmodel.UserViewModel
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import com.example.dine_and_tell.model.User
-import com.example.dine_and_tell.firebase.FirebaseUserService
-
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private val userService = FirebaseUserService()
+    private val userViewModel: UserViewModel by viewModels()
 
     private val signInLauncher = registerForActivityResult(
         FirebaseAuthUIActivityResultContract()
@@ -41,6 +38,13 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        userViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                Toast.makeText(requireContext(), "Welcome, ${user.username}!", Toast.LENGTH_SHORT).show()
+                navigateToExploration()
+            }
+        }
 
         binding.signInGoogleButton.setOnClickListener {
             launchSignIn()
@@ -62,27 +66,15 @@ class LoginFragment : Fragment() {
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
         val response = result.idpResponse
-
         if (result.resultCode == Activity.RESULT_OK) {
             val firebaseUser = FirebaseAuth.getInstance().currentUser
-
             firebaseUser?.let {
-                lifecycleScope.launch {
-                    val existingUser = userService.getUser(it.uid)
-
-                    if (existingUser == null) {
-                        val newUser = User(
-                            id = it.uid,
-                            username = it.displayName ?: "User",
-                            email = it.email ?: "",
-                            profilePictureUrl = it.photoUrl?.toString()
-                        )
-
-                        userService.saveUser(newUser)
-                    }
-                    Toast.makeText(requireContext(), "Welcome, ${existingUser?.username}!", Toast.LENGTH_SHORT).show()
-                    navigateToExploration()
-                }
+                userViewModel.handleLogin(
+                    it.uid,
+                    it.displayName ?: "User",
+                    it.email ?: "",
+                    it.photoUrl?.toString()
+                )
             }
         } else {
             if (response == null) {

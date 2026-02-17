@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
@@ -21,11 +22,14 @@ import com.example.dine_and_tell.repository.PlacesRepository
 import com.example.dine_and_tell.viewmodel.ApiResult
 import com.example.dine_and_tell.viewmodel.ExplorationViewModel
 import com.example.dine_and_tell.viewmodel.ExplorationViewModelFactory
+import com.example.dine_and_tell.viewmodel.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
     private var _binding: FragmentExplorationBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: ExplorationViewModel
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var restaurantsAdapter: RestaurantsAdapter
     private lateinit var footerAdapter: FooterAdapter
     private var currentFilter: String = ""
@@ -48,6 +52,19 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        val firebaseAuthUser = FirebaseAuth.getInstance().currentUser
+        
+        firebaseAuthUser?.let { user ->
+            userViewModel.fetchUser(user.uid)
+        }
+
+        userViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            val username = user?.username ?: firebaseAuthUser?.displayName ?: "Guest"
+
+            binding.welcomeText.text = "Hello, $username"
+        }
+
         setupRecyclerView()
         setupSpinner()
 

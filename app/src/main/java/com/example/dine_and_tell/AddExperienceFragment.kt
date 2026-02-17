@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class AddExperienceFragment : Fragment() {
     private var _binding: FragmentAddExperienceBinding? = null
@@ -33,10 +34,16 @@ class AddExperienceFragment : Fragment() {
         binding.saveButton.setOnClickListener {
             val review = binding.reviewEditText.text.toString()
             val rating = binding.ratingBar.rating
+            val currentUser = FirebaseAuth.getInstance().currentUser
+
+            if (currentUser == null) {
+                Toast.makeText(requireContext(), "You must be signed in", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             if (review.isNotEmpty()) {
                 val restaurantId = args.restaurantId
-                val userId = "user123"
+                val userId = currentUser.uid
 
                 val experience = Experience(
                     restaurantId = restaurantId,
