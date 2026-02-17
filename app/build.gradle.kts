@@ -26,6 +26,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -52,6 +56,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.recyclerview)
     
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -75,6 +80,10 @@ dependencies {
     // UI & Media
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.picasso)
+
+    // Networking - Retrofit & Gson
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
