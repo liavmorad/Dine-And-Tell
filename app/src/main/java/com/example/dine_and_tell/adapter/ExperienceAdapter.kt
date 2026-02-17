@@ -11,13 +11,14 @@ import com.squareup.picasso.Picasso
 
 class ExperienceAdapter(
     private var experiences: List<Experience>,
+    private val currentUserId: String? = null,
     private val onEditClicked: ((Experience) -> Unit)? = null
 ) : RecyclerView.Adapter<ExperienceAdapter.ExperienceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExperienceViewHolder {
         val binding =
             ExperienceCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExperienceViewHolder(binding, onEditClicked)
+        return ExperienceViewHolder(binding, currentUserId, onEditClicked)
     }
 
     override fun onBindViewHolder(holder: ExperienceViewHolder, position: Int) {
@@ -31,7 +32,11 @@ class ExperienceAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ExperienceViewHolder(private val binding: ExperienceCardBinding, private val onEditClicked: ((Experience) -> Unit)?) :
+    inner class ExperienceViewHolder(
+        private val binding: ExperienceCardBinding,
+        private val currentUserId: String?,
+        private val onEditClicked: ((Experience) -> Unit)?
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(experience: Experience) {
             if (experience.restaurantName.isNotEmpty()) {
@@ -51,7 +56,14 @@ class ExperienceAdapter(
                 binding.experienceImage.setImageResource(R.drawable.default_restaurant)
             }
 
-            if (onEditClicked != null && experience.firestoreId != null) {
+            // Show edit icon if:
+            // 1. Edit callback is provided
+            // 2. Experience has an ID (saved in DB)
+            // 3. EITHER currentUserId is null (assume authorized context like MyExperiences)
+            //    OR experience.userId matches currentUserId
+            val isOwner = currentUserId == null || experience.userId == currentUserId
+            
+            if (onEditClicked != null && experience.firestoreId != null && isOwner) {
                 binding.editIcon.visibility = View.VISIBLE
                 binding.editIcon.setOnClickListener {
                     onEditClicked.invoke(experience)
