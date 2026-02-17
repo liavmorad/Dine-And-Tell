@@ -9,9 +9,11 @@ import com.example.dine_and_tell.databinding.FragmentAddExperienceBinding
 
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
 class AddExperienceFragment : Fragment() {
@@ -31,6 +33,13 @@ class AddExperienceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val experience = args.experience
+        if (experience != null) {
+            binding.reviewEditText.setText(experience.review)
+            binding.ratingBar.rating = experience.rating
+            binding.saveButton.text = "Update Review"
+        }
+
         binding.saveButton.setOnClickListener {
             val review = binding.reviewEditText.text.toString()
             val rating = binding.ratingBar.rating
@@ -42,17 +51,31 @@ class AddExperienceFragment : Fragment() {
             }
 
             if (review.isNotEmpty()) {
-                val restaurantId = args.restaurantId
-                val userId = currentUser.uid
+                if (experience != null) {
+                    val updatedExperience = experience.copy(
+                        review = review,
+                        rating = rating,
+                        dateOfVisit = System.currentTimeMillis()
+                    )
 
-                val experience = Experience(
-                    restaurantId = restaurantId,
-                    userId = userId,
-                    review = review,
-                    rating = rating,
-                    dateOfVisit = System.currentTimeMillis()
-                )
-                viewModel.addExperience(experience)
+                    viewModel.updateExperience(updatedExperience)
+                    Toast.makeText(context, "Experience updated!", Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
+                } else {
+                    val restaurantId = args.restaurantId ?: ""
+                    val restaurantName = args.restaurantName ?: ""
+                    val userId = currentUser.uid
+
+                    val newExperience = Experience(
+                        restaurantId = restaurantId,
+                        restaurantName = restaurantName,
+                        userId = userId,
+                        review = review,
+                        rating = rating,
+                        dateOfVisit = System.currentTimeMillis()
+                    )
+                    viewModel.addExperience(newExperience)
+                }
             } else {
                 Toast.makeText(context, "Please write a review", Toast.LENGTH_SHORT).show()
             }
@@ -60,10 +83,12 @@ class AddExperienceFragment : Fragment() {
 
         viewModel.addExperienceStatus.observe(viewLifecycleOwner) { success ->
             if (success) {
-                Toast.makeText(context, "Experience saved!", Toast.LENGTH_SHORT).show()
-                // Optionally navigate back or clear fields
-                binding.reviewEditText.text.clear()
-                binding.ratingBar.rating = 0f
+                if (experience == null) {
+                    Toast.makeText(context, "Experience saved!", Toast.LENGTH_SHORT).show()
+                    binding.reviewEditText.text.clear()
+                    binding.ratingBar.rating = 0f
+                    findNavController().popBackStack()
+                }
             } else {
                 Toast.makeText(context, "Failed to save experience", Toast.LENGTH_SHORT).show()
             }

@@ -30,13 +30,14 @@
             tools:text="User says" />
 
         <ImageView
-            android:id="@+id/delete_icon"
+            android:id="@+id/edit_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_delete"
+            android:src="@drawable/edit_icon"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:tint="#C67C4E"
             tools:visibility="visible" />
 
         <TextView
