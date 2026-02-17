@@ -1,5 +1,9 @@
 package com.example.dine_and_tell
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import android.graphics.Paint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,19 +12,32 @@ import android.view.ViewGroup
 import com.example.dine_and_tell.databinding.FragmentAddExperienceBinding
 
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
-import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
 
 class AddExperienceFragment : Fragment() {
     private var _binding: FragmentAddExperienceBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ExperienceViewModel by viewModels()
     private val args: AddExperienceFragmentArgs by navArgs()
+    private var selectedImageUri: Uri? = null
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                selectedImageUri = uri
+                binding.experienceImagePreview.setImageURI(uri)
+                binding.experienceImagePreview.visibility = View.VISIBLE
+                binding.uploadPlaceholder.visibility = View.GONE
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,14 +47,54 @@ class AddExperienceFragment : Fragment() {
         return binding.root
     }
 
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        pickImageLauncher.launch(intent)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.imageCard.setOnClickListener {
+            openImagePicker()
+        }
+
         val experience = args.experience
+        val restaurantName = args.restaurantName ?: experience?.restaurantName ?: "Restaurant"
+        binding.restaurantName.text = restaurantName
+
+        binding.deleteButton.paintFlags = binding.deleteButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
         if (experience != null) {
+            binding.title.text = "Edit my experience in"
             binding.reviewEditText.setText(experience.review)
             binding.ratingBar.rating = experience.rating
-            binding.saveButton.text = "Update Review"
+            binding.saveButton.text = "Save & Update"
+            binding.deleteButton.visibility = View.VISIBLE
+            
+            if (!experience.imageUrl.isNullOrEmpty()) {
+                Picasso.get().load(experience.imageUrl).into(binding.experienceImagePreview)
+                binding.experienceImagePreview.visibility = View.VISIBLE
+                binding.uploadPlaceholder.visibility = View.GONE
+            }
+        } else {
+            binding.title.text = "Tell us about your experience dining in"
+            binding.saveButton.text = "Share with the world!"
+            binding.deleteButton.visibility = View.GONE
+        }
+
+        binding.backArrow.setOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        binding.deleteButton.setOnClickListener {
+            experience?.firestoreId?.let { id ->
+                setLoading(true)
+                viewModel.deleteExperience(id)
+                Toast.makeText(context, "Experience deleted", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
         }
 
         binding.saveButton.setOnClickListener {
@@ -51,6 +108,7 @@ class AddExperienceFragment : Fragment() {
             }
 
             if (review.isNotEmpty()) {
+                setLoading(true)
                 if (experience != null) {
                     val updatedExperience = experience.copy(
                         review = review,
@@ -82,16 +140,35 @@ class AddExperienceFragment : Fragment() {
         }
 
         viewModel.addExperienceStatus.observe(viewLifecycleOwner) { success ->
+            setLoading(false)
             if (success) {
                 if (experience == null) {
                     Toast.makeText(context, "Experience saved!", Toast.LENGTH_SHORT).show()
                     binding.reviewEditText.text.clear()
-                    binding.ratingBar.rating = 0f
+                    binding.ratingBar.rating = 5f
                     findNavController().popBackStack()
                 }
             } else {
                 Toast.makeText(context, "Failed to save experience", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.saveButton.isEnabled = false
+            binding.deleteButton.isEnabled = false
+            binding.reviewEditText.isEnabled = false
+            binding.ratingBar.isEnabled = false
+            binding.imageCard.isEnabled = false
+        } else {
+            binding.progressBar.visibility = View.GONE
+            binding.saveButton.isEnabled = true
+            binding.deleteButton.isEnabled = true
+            binding.reviewEditText.isEnabled = true
+            binding.ratingBar.isEnabled = true
+            binding.imageCard.isEnabled = true
         }
     }
 

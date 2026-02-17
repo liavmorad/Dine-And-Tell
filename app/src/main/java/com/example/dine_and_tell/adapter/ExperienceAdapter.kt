@@ -39,6 +39,7 @@ class ExperienceAdapter(
             } else {
                 binding.experienceTitle.text = "My Review"
             }
+            binding.experienceRating.rating = experience.rating
             binding.experienceDescription.text = experience.review
             if (!experience.imageUrl.isNullOrEmpty()) {
                 Picasso.get()

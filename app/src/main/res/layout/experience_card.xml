@@ -29,6 +29,20 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="User says" />
 
+        <RatingBar
+            android:id="@+id/experience_rating"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:progressTint="#C67C4E"
+            android:secondaryProgressTint="#C67C4E"
+            android:stepSize="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/experience_title" />
+
         <ImageView
             android:id="@+id/edit_icon"
             android:layout_width="wrap_content"
@@ -49,7 +63,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/experience_title"
+            app:layout_constraintTop_toBottomOf="@+id/experience_rating"
             tools:text="The food was amazing!" />
 
         <ImageView
