@@ -14,6 +14,8 @@ import com.example.dine_and_tell.databinding.FragmentRestaurantDetailsBinding
 import androidx.fragment.app.viewModels
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
 
+import com.google.firebase.auth.FirebaseAuth
+
 class RestaurantDetailsFragment : Fragment() {
     private var _binding: FragmentRestaurantDetailsBinding? = null
     private val binding get() = _binding!!
@@ -52,7 +54,22 @@ class RestaurantDetailsFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        experienceAdapter = ExperienceAdapter(emptyList())
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+        val place = args.place
+
+        experienceAdapter = ExperienceAdapter(
+            experiences = emptyList(),
+            currentUserId = currentUserId,
+            onEditClicked = { experience ->
+                // Navigate to AddExperienceFragment in edit mode
+                val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(
+                    restaurantId = place.id,
+                    restaurantName = place.name,
+                    experience = experience
+                )
+                findNavController().navigate(action)
+            }
+        )
         binding.experiencesRecyclerView.apply {
             adapter = experienceAdapter
             layoutManager = LinearLayoutManager(context)
