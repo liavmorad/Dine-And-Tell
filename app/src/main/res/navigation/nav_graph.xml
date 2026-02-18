@@ -44,13 +44,29 @@
         tools:layout="@layout/fragment_add_experience" >
         <argument
             android:name="restaurantId"
-            app:argType="string" />
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="restaurantName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="experience"
+            app:argType="com.example.dine_and_tell.model.Experience"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/myExperiencesFragment"
         android:name="com.example.dine_and_tell.MyExperiencesFragment"
         android:label="fragment_my_experiences"
-        tools:layout="@layout/fragment_my_experiences" />
+        tools:layout="@layout/fragment_my_experiences">
+        <action
+            android:id="@+id/action_myExperiencesFragment_to_addExperienceFragment"
+            app:destination="@id/addExperienceFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.dine_and_tell.ProfileFragment"

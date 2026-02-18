@@ -6,16 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.dine_and_tell.databinding.FragmentMyExperiencesBinding
-
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.example.dine_and_tell.MyExperiencesFragmentDirections
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dine_and_tell.adapter.ExperienceAdapter
+
 import com.example.dine_and_tell.viewmodel.ExperienceViewModel
+import com.example.dine_and_tell.viewmodel.UserViewModel
 
 class MyExperiencesFragment : Fragment() {
     private var _binding: FragmentMyExperiencesBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: ExperienceViewModel by viewModels()
+    
+    private val experienceViewModel: ExperienceViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
+    
     private lateinit var experienceAdapter: ExperienceAdapter
 
     override fun onCreateView(
@@ -31,19 +37,25 @@ class MyExperiencesFragment : Fragment() {
 
         setupRecyclerView()
 
-        viewModel.experiences.observe(viewLifecycleOwner) { experiences ->
-            experienceAdapter.updateData(experiences)
+        userViewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                experienceViewModel.getExperiencesByUserId(it.id)
+            }
         }
 
-        // Hardcoded user ID for demonstration
-        viewModel.getExperiencesByUserId("user123")
+        experienceViewModel.experiences.observe(viewLifecycleOwner) { experiences ->
+            experienceAdapter.updateData(experiences)
+        }
     }
 
     private fun setupRecyclerView() {
-        experienceAdapter = ExperienceAdapter(emptyList()) { experienceId ->
-            viewModel.deleteExperience(experienceId)
-            // Refresh the list after deletion
-            viewModel.getExperiencesByUserId("user123")
+        experienceAdapter = ExperienceAdapter(emptyList()) { experience ->
+            val action = MyExperiencesFragmentDirections.actionMyExperiencesFragmentToAddExperienceFragment(
+                restaurantId = null,
+                restaurantName = null,
+                experience = experience
+            )
+            findNavController().navigate(action)
         }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)

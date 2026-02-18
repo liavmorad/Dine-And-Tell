@@ -11,9 +11,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dine_and_tell.adapter.ExperienceAdapter
 import com.example.dine_and_tell.databinding.FragmentRestaurantDetailsBinding
-import com.example.dine_and_tell.firebase.FirebaseExperienceService
-import kotlinx.coroutines.launch
-import com.example.dine_and_tell.RestaurantDetailsFragmentDirections
+import androidx.fragment.app.viewModels
+import com.example.dine_and_tell.viewmodel.ExperienceViewModel
 
 class RestaurantDetailsFragment : Fragment() {
     private var _binding: FragmentRestaurantDetailsBinding? = null
@@ -21,7 +20,7 @@ class RestaurantDetailsFragment : Fragment() {
 
     private val args: RestaurantDetailsFragmentArgs by navArgs()
     private lateinit var experienceAdapter: ExperienceAdapter
-    private val firebaseExperienceService = FirebaseExperienceService()
+    private val experienceViewModel: ExperienceViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,7 +46,7 @@ class RestaurantDetailsFragment : Fragment() {
         }
 
         binding.addExperienceFab.setOnClickListener {
-            val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(place.id)
+            val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(place.id, place.name)
             findNavController().navigate(action)
         }
     }
@@ -62,8 +61,8 @@ class RestaurantDetailsFragment : Fragment() {
 
     private fun loadExperiences(restaurantId: String) {
         binding.loadingSpinner.visibility = View.VISIBLE
-        lifecycleScope.launch {
-            val experiences = firebaseExperienceService.getExperiencesByRestaurantId(restaurantId)
+        
+        experienceViewModel.restaurantExperiences.observe(viewLifecycleOwner) { experiences ->
             experienceAdapter.updateData(experiences)
             if (experiences.isEmpty()) {
                 binding.noExperiencesMessage.visibility = View.VISIBLE
@@ -74,6 +73,8 @@ class RestaurantDetailsFragment : Fragment() {
             }
             binding.loadingSpinner.visibility = View.GONE
         }
+
+        experienceViewModel.getExperiencesByRestaurantId(restaurantId)
     }
 
     override fun onDestroyView() {

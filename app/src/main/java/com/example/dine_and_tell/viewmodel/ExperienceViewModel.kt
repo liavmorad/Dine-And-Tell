@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dine_and_tell.firebase.FirebaseExperienceService
 import com.example.dine_and_tell.model.Experience
+import com.example.dine_and_tell.repository.ExperienceRepository
 import kotlinx.coroutines.launch
 
 class ExperienceViewModel : ViewModel() {
 
-    private val firebaseExperienceService = FirebaseExperienceService()
+    private val repository = ExperienceRepository.getInstance()
 
-    private val _experiences = MutableLiveData<List<Experience>>()
-    val experiences: LiveData<List<Experience>> = _experiences
+    val experiences: LiveData<List<Experience>> = repository.userExperiences
+    val restaurantExperiences: LiveData<List<Experience>> = repository.restaurantExperiences
 
     private val _addExperienceStatus = MutableLiveData<Boolean>()
     val addExperienceStatus: LiveData<Boolean> = _addExperienceStatus
@@ -21,7 +21,7 @@ class ExperienceViewModel : ViewModel() {
     fun addExperience(experience: Experience) {
         viewModelScope.launch {
             try {
-                firebaseExperienceService.addExperience(experience)
+                repository.addExperience(experience)
                 _addExperienceStatus.postValue(true)
             } catch (e: Exception) {
                 _addExperienceStatus.postValue(false)
@@ -31,19 +31,20 @@ class ExperienceViewModel : ViewModel() {
 
     fun getExperiencesByUserId(userId: String) {
         viewModelScope.launch {
-            try {
-                _experiences.postValue(firebaseExperienceService.getExperiencesByUserId(userId))
-            } catch (e: Exception) {
-                // Handle error
-            }
+            repository.getExperiencesByUserId(userId)
+        }
+    }
+
+    fun getExperiencesByRestaurantId(restaurantId: String) {
+        viewModelScope.launch {
+            repository.getExperiencesByRestaurantId(restaurantId)
         }
     }
 
     fun updateExperience(experience: Experience) {
         viewModelScope.launch {
             try {
-                firebaseExperienceService.updateExperience(experience)
-                // Optionally, refresh the list of experiences
+                repository.updateExperience(experience)
             } catch (e: Exception) {
                 // Handle error
             }
@@ -53,10 +54,9 @@ class ExperienceViewModel : ViewModel() {
     fun deleteExperience(firestoreId: String) {
         viewModelScope.launch {
             try {
-                firebaseExperienceService.deleteExperience(firestoreId)
-                // Optionally, refresh the list of experiences
+                repository.deleteExperience(firestoreId)
             } catch (e: Exception) {
-                // Handle error
+                // @TODO Handle error
             }
         }
     }
