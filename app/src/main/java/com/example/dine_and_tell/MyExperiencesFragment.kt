@@ -19,7 +19,11 @@ class MyExperiencesFragment : Fragment() {
     private var _binding: FragmentMyExperiencesBinding? = null
     private val binding get() = _binding!!
     
-    private val experienceViewModel: ExperienceViewModel by viewModels()
+    private val experienceViewModel: ExperienceViewModel by viewModels {
+        val database = com.example.dine_and_tell.database.AppDatabase.getDatabase(requireContext())
+        val repository = com.example.dine_and_tell.repository.ExperienceRepository.getInstance(database.experienceDao())
+        com.example.dine_and_tell.viewmodel.ExperienceViewModelFactory(repository)
+    }
     private val userViewModel: UserViewModel by viewModels()
     
     private lateinit var experienceAdapter: ExperienceAdapter

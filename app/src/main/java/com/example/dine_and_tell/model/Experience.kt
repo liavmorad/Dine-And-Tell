@@ -1,7 +1,6 @@
 package com.example.dine_and_tell.model
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 import com.google.firebase.firestore.DocumentId
@@ -10,23 +9,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(
-    tableName = "experiences",
-    foreignKeys = [
-        ForeignKey(
-            entity = Restaurant::class,
-            parentColumns = ["id"],
-            childColumns = ["restaurantId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
+@Entity(tableName = "experiences")
 data class Experience(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     @DocumentId val firestoreId: String? = null,
