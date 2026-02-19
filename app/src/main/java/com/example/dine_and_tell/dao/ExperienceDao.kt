@@ -5,13 +5,13 @@ import com.example.dine_and_tell.model.Experience
 
 @Dao
 interface ExperienceDao {
-    @Query("SELECT * FROM experiences")
+    @Query("SELECT * FROM experiences ORDER BY dateOfVisit DESC")
     suspend fun getAll(): List<Experience>
 
-    @Query("SELECT * FROM experiences WHERE userId = :userId")
+    @Query("SELECT * FROM experiences WHERE userId = :userId ORDER BY dateOfVisit DESC")
     suspend fun getByUserId(userId: String): List<Experience>
 
-    @Query("SELECT * FROM experiences WHERE restaurantId = :restaurantId")
+    @Query("SELECT * FROM experiences WHERE restaurantId = :restaurantId ORDER BY dateOfVisit DESC")
     suspend fun getByRestaurantId(restaurantId: String): List<Experience>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.dine_and_tell.dao.ExperienceDao
 import com.example.dine_and_tell.model.Experience
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -50,7 +51,11 @@ class ExperienceRepository(private val experienceDao: ExperienceDao) {
                 }
 
                 // Sync with Firestore
-                val snapshot = experiencesCollection.whereEqualTo("userId", userId).get().await()
+                val snapshot = experiencesCollection
+                    .whereEqualTo("userId", userId)
+                    .orderBy("dateOfVisit", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
                 }
@@ -77,7 +82,11 @@ class ExperienceRepository(private val experienceDao: ExperienceDao) {
                 }
 
                 // Sync with Firestore
-                val snapshot = experiencesCollection.whereEqualTo("restaurantId", restaurantId).get().await()
+                val snapshot = experiencesCollection
+                    .whereEqualTo("restaurantId", restaurantId)
+                    .orderBy("dateOfVisit", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
                 }
