@@ -9,7 +9,7 @@ import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.model.User
 import com.example.dine_and_tell.model.Restaurant
 
-@Database(entities = [Experience::class, User::class, Restaurant::class], version = 1, exportSchema = false)
+@Database(entities = [Experience::class, User::class, Restaurant::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun experienceDao(): ExperienceDao
 

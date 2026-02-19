@@ -117,6 +117,7 @@ class AddExperienceFragment : Fragment() {
                     val updatedExperience = experience.copy(
                         review = review,
                         rating = rating,
+                        userName = experience.userName.ifEmpty { currentUser.displayName ?: "User" },
                         dateOfVisit = System.currentTimeMillis()
                     )
 
@@ -127,11 +128,13 @@ class AddExperienceFragment : Fragment() {
                     val restaurantId = args.restaurantId ?: ""
                     val restaurantName = args.restaurantName ?: ""
                     val userId = currentUser.uid
+                    val userName = currentUser.displayName ?: "User"
 
                     val newExperience = Experience(
                         restaurantId = restaurantId,
                         restaurantName = restaurantName,
                         userId = userId,
+                        userName = userName,
                         review = review,
                         rating = rating,
                         dateOfVisit = System.currentTimeMillis()

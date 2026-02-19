@@ -16,6 +16,7 @@ data class Experience(
     val restaurantId: String = "",
     val restaurantName: String = "",
     val userId: String = "",
+    val userName: String = "",
     val rating: Float = 0f,
     val review: String = "",
     val imageUrl: String? = null,

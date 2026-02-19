@@ -64,6 +64,7 @@ class RestaurantDetailsFragment : Fragment() {
         experienceAdapter = ExperienceAdapter(
             experiences = emptyList(),
             currentUserId = currentUserId,
+            showUserNameInTitle = true,
             onEditClicked = { experience ->
                 // Navigate to AddExperienceFragment in edit mode
                 val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(
