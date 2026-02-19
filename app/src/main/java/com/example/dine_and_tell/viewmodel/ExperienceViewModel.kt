@@ -13,6 +13,9 @@ class ExperienceViewModel(private val repository: ExperienceRepository) : ViewMo
     val experiences: LiveData<List<Experience>> = repository.userExperiences
     val restaurantExperiences: LiveData<List<Experience>> = repository.restaurantExperiences
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val _addExperienceStatus = MutableLiveData<Boolean>()
     val addExperienceStatus: LiveData<Boolean> = _addExperienceStatus
 
@@ -28,8 +31,10 @@ class ExperienceViewModel(private val repository: ExperienceRepository) : ViewMo
     }
 
     fun getExperiencesByUserId(userId: String) {
+        _isLoading.postValue(true)
         viewModelScope.launch {
             repository.getExperiencesByUserId(userId)
+            _isLoading.postValue(false)
         }
     }
 
