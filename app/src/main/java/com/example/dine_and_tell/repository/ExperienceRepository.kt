@@ -53,12 +53,11 @@ class ExperienceRepository(private val experienceDao: ExperienceDao) {
                 // Sync with Firestore
                 val snapshot = experiencesCollection
                     .whereEqualTo("userId", userId)
-                    .orderBy("dateOfVisit", Query.Direction.DESCENDING)
                     .get()
                     .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
-                }
+                }.sortedByDescending { it.dateOfVisit }
 
                 // Update local Room database
                 experiences.forEach { experienceDao.insert(it) }
@@ -84,12 +83,11 @@ class ExperienceRepository(private val experienceDao: ExperienceDao) {
                 // Sync with Firestore
                 val snapshot = experiencesCollection
                     .whereEqualTo("restaurantId", restaurantId)
-                    .orderBy("dateOfVisit", Query.Direction.DESCENDING)
                     .get()
                     .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
-                }
+                }.sortedByDescending { it.dateOfVisit }
 
                 // Update local Room database
                 experiences.forEach { experienceDao.insert(it) }

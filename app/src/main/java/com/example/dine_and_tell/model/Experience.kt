@@ -11,8 +11,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @Entity(tableName = "experiences")
 data class Experience(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    @DocumentId val firestoreId: String? = null,
+    @PrimaryKey @DocumentId val firestoreId: String = "",
     val restaurantId: String = "",
     val restaurantName: String = "",
     val userId: String = "",
