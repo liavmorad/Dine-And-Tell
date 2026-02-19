@@ -8,7 +8,7 @@ import com.example.dine_and_tell.model.Experience
 import com.example.dine_and_tell.repository.ExperienceRepository
 import kotlinx.coroutines.launch
 
-class ExperienceViewModel : ViewModel() {
+class ExperienceViewModel(repository1: ExperienceRepository) : ViewModel() {
 
     private val repository = ExperienceRepository.getInstance()
 
