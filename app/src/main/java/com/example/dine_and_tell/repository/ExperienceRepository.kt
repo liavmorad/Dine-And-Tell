@@ -2,14 +2,16 @@ package com.example.dine_and_tell.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.dine_and_tell.dao.ExperienceDao
 import com.example.dine_and_tell.model.Experience
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class ExperienceRepository {
+class ExperienceRepository(private val experienceDao: ExperienceDao) {
     private val db = FirebaseFirestore.getInstance()
     private val experiencesCollection = db.collection("experiences")
 
@@ -23,26 +25,43 @@ class ExperienceRepository {
         @Volatile
         private var instance: ExperienceRepository? = null
 
-        fun getInstance() =
+        fun getInstance(experienceDao: ExperienceDao) =
             instance ?: synchronized(this) {
-                instance ?: ExperienceRepository().also { instance = it }
+                instance ?: ExperienceRepository(experienceDao).also { instance = it }
             }
     }
 
     suspend fun addExperience(experience: Experience): String {
         return withContext(Dispatchers.IO) {
             val documentReference = experiencesCollection.add(experience).await()
-            documentReference.id
+            val firestoreId = documentReference.id
+            val experienceWithId = experience.copy(firestoreId = firestoreId)
+            experienceDao.insert(experienceWithId)
+            firestoreId
         }
     }
 
     suspend fun getExperiencesByUserId(userId: String) {
         withContext(Dispatchers.IO) {
             try {
-                val snapshot = experiencesCollection.whereEqualTo("userId", userId).get().await()
+                // Try to get from Room first for immediate results (offline support)
+                val localExperiences = experienceDao.getByUserId(userId)
+                withContext(Dispatchers.Main) {
+                    _userExperiences.value = localExperiences
+                }
+
+                // Sync with Firestore
+                val snapshot = experiencesCollection
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
-                }
+                }.sortedByDescending { it.dateOfVisit }
+
+                // Update local Room database
+                experiences.forEach { experienceDao.insert(it) }
+
                 withContext(Dispatchers.Main) {
                     _userExperiences.value = experiences
                 }
@@ -55,10 +74,24 @@ class ExperienceRepository {
     suspend fun getExperiencesByRestaurantId(restaurantId: String) {
         withContext(Dispatchers.IO) {
             try {
-                val snapshot = experiencesCollection.whereEqualTo("restaurantId", restaurantId).get().await()
+                // Try to get from Room first
+                val localExperiences = experienceDao.getByRestaurantId(restaurantId)
+                withContext(Dispatchers.Main) {
+                    _restaurantExperiences.value = localExperiences
+                }
+
+                // Sync with Firestore
+                val snapshot = experiencesCollection
+                    .whereEqualTo("restaurantId", restaurantId)
+                    .get()
+                    .await()
                 val experiences = snapshot.documents.mapNotNull { document ->
                     document.toObject<Experience>()?.copy(firestoreId = document.id)
-                }
+                }.sortedByDescending { it.dateOfVisit }
+
+                // Update local Room database
+                experiences.forEach { experienceDao.insert(it) }
+
                 withContext(Dispatchers.Main) {
                     _restaurantExperiences.value = experiences
                 }
@@ -72,6 +105,7 @@ class ExperienceRepository {
         withContext(Dispatchers.IO) {
             experience.firestoreId?.let {
                 experiencesCollection.document(it).set(experience).await()
+                experienceDao.update(experience)
             }
         }
     }
@@ -79,6 +113,7 @@ class ExperienceRepository {
     suspend fun deleteExperience(firestoreId: String) {
         withContext(Dispatchers.IO) {
             experiencesCollection.document(firestoreId).delete().await()
+            experienceDao.deleteByFirestoreId(firestoreId)
         }
     }
     
