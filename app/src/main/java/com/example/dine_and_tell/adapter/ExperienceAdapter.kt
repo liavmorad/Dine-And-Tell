@@ -51,13 +51,23 @@ class ExperienceAdapter(
             binding.experienceRating.rating = experience.rating
             binding.experienceDescription.text = experience.review
             if (!experience.imageUrl.isNullOrEmpty()) {
+                binding.imageProgress.visibility = View.VISIBLE
                 Picasso.get()
                     .load(experience.imageUrl)
-                    .placeholder(R.drawable.default_restaurant)
-                    .error(R.drawable.default_restaurant)
-                    .into(binding.experienceImage)
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder)
+                    .into(binding.experienceImage, object : com.squareup.picasso.Callback {
+                        override fun onSuccess() {
+                            binding.imageProgress.visibility = View.GONE
+                        }
+
+                        override fun onError(e: Exception?) {
+                            binding.imageProgress.visibility = View.GONE
+                        }
+                    })
             } else {
-                binding.experienceImage.setImageResource(R.drawable.default_restaurant)
+                binding.experienceImage.setImageResource(R.drawable.placeholder)
+                binding.imageProgress.visibility = View.GONE
             }
 
             // Show edit icon if:

@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
 
     private val userViewModel: UserViewModel by viewModels()
 

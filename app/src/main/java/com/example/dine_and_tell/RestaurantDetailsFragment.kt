@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class RestaurantDetailsFragment : Fragment() {
     private var _binding: FragmentRestaurantDetailsBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
 
     private val args: RestaurantDetailsFragmentArgs by navArgs()
     private lateinit var experienceAdapter: ExperienceAdapter

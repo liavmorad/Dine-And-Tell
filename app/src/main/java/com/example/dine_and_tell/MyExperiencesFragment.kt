@@ -17,7 +17,7 @@ import com.example.dine_and_tell.viewmodel.UserViewModel
 
 class MyExperiencesFragment : Fragment() {
     private var _binding: FragmentMyExperiencesBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
     
     private val experienceViewModel: ExperienceViewModel by viewModels {
         val database = com.example.dine_and_tell.database.AppDatabase.getDatabase(requireContext())

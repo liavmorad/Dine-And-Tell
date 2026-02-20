@@ -30,7 +30,7 @@ import java.util.UUID
 
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
 
     private var isEditMode: Boolean = false
     private var selectedImageUri: Uri? = null
@@ -124,9 +124,22 @@ class ProfileFragment : Fragment() {
     private fun updateUI(user: User) {
         binding.profileUsername.setText(user.username)
         if (!user.profilePictureUrl.isNullOrEmpty()) {
-            Picasso.get().load(user.profilePictureUrl).placeholder(R.drawable.person).into(binding.profileImage)
+            binding.profileImageProgressBar.visibility = View.VISIBLE
+            Picasso.get()
+                .load(user.profilePictureUrl)
+                .placeholder(R.drawable.person)
+                .into(binding.profileImage, object : com.squareup.picasso.Callback {
+                    override fun onSuccess() {
+                        binding.profileImageProgressBar.visibility = View.GONE
+                    }
+
+                    override fun onError(e: Exception?) {
+                        binding.profileImageProgressBar.visibility = View.GONE
+                    }
+                })
         } else {
             binding.profileImage.setImageResource(R.drawable.person)
+            binding.profileImageProgressBar.visibility = View.GONE
         }
     }
 
@@ -141,14 +154,14 @@ class ProfileFragment : Fragment() {
         currentUser?.let { user ->
             setLoading(true)
             
-            if (selectedImageUri != null) {
+            selectedImageUri?.let { uri ->
                 val storageRef = FirebaseStorage.getInstance().reference
                 val imagesRef = storageRef.child("profile-images/${user.id}.jpg")
                 
-                val uploadTask = imagesRef.putFile(selectedImageUri!!)
+                val uploadTask = imagesRef.putFile(uri)
                 uploadTask.addOnSuccessListener { taskSnapshot ->
-                    imagesRef.downloadUrl.addOnSuccessListener { uri ->
-                        val downloadUrl = uri.toString()
+                    imagesRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                        val downloadUrl = downloadUri.toString()
                         val updatedUser = user.copy(username = newUsername, profilePictureUrl = downloadUrl)
                         updateUserAndFinish(updatedUser)
                     }.addOnFailureListener {
@@ -159,7 +172,7 @@ class ProfileFragment : Fragment() {
                     setLoading(false)
                     Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show()
                 }
-            } else {
+            } ?: run {
                 val updatedUser = user.copy(username = newUsername)
                 updateUserAndFinish(updatedUser)
             }

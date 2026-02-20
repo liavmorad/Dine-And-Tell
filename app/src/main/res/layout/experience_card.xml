@@ -37,8 +37,8 @@
             android:layout_marginTop="4dp"
             android:isIndicator="true"
             android:numStars="5"
-            android:progressTint="#C67C4E"
-            android:secondaryProgressTint="#C67C4E"
+            android:progressTint="@color/primary_brown"
+            android:secondaryProgressTint="@color/primary_brown"
             android:stepSize="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/experience_title" />
@@ -51,7 +51,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#C67C4E"
+            app:tint="@color/primary_brown"
             tools:visibility="visible" />
 
         <TextView
@@ -76,6 +76,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/experience_description"
             tools:src="@drawable/burger" />
+
+        <ProgressBar
+            android:id="@+id/imageProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:indeterminateTint="@color/primary_brown"
+            app:layout_constraintBottom_toBottomOf="@+id/experience_image"
+            app:layout_constraintEnd_toEndOf="@+id/experience_image"
+            app:layout_constraintStart_toStartOf="@+id/experience_image"
+            app:layout_constraintTop_toTopOf="@+id/experience_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

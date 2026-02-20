@@ -27,7 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
     private var _binding: FragmentExplorationBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
     private lateinit var viewModel: ExplorationViewModel
     private val userViewModel: UserViewModel by viewModels()
     private lateinit var restaurantsAdapter: RestaurantsAdapter
@@ -109,7 +109,7 @@ class ExplorationFragment : Fragment(), RestaurantsAdapter.OnItemClickListener {
         binding.citySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val cityName = parent.getItemAtPosition(position) as String
-                currentFilter = cities[cityName]!!
+                currentFilter = cities[cityName] ?: ""
                 viewModel.getPlaces(currentFilter)
                 binding.restaurantsRecyclerView.scrollToPosition(0)
             }

@@ -31,7 +31,7 @@ import com.squareup.picasso.Picasso
 
 class AddExperienceFragment : Fragment() {
     private var _binding: FragmentAddExperienceBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding ?: throw IllegalStateException("Binding accessed before onCreateView or after onDestroyView")
     private val viewModel: ExperienceViewModel by viewModels {
         val database = com.example.dine_and_tell.database.AppDatabase.getDatabase(requireContext())
         val repository = com.example.dine_and_tell.repository.ExperienceRepository.getInstance(database.experienceDao())
@@ -157,14 +157,14 @@ class AddExperienceFragment : Fragment() {
             if (review.isNotEmpty()) {
                 setLoading(true)
                 
-                if (selectedImageUri != null) {
+                selectedImageUri?.let { uri ->
                     val storageRef = FirebaseStorage.getInstance().reference
                     val imagesRef = storageRef.child("experience-images/${UUID.randomUUID()}.jpg")
                     
-                    val uploadTask = imagesRef.putFile(selectedImageUri!!)
+                    val uploadTask = imagesRef.putFile(uri)
                     uploadTask.addOnSuccessListener { taskSnapshot ->
-                        imagesRef.downloadUrl.addOnSuccessListener { uri ->
-                            val downloadUrl = uri.toString()
+                        imagesRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                            val downloadUrl = downloadUri.toString()
                             saveExperienceToFirestore(currentUser, review, rating, downloadUrl)
                         }.addOnFailureListener {
                             setLoading(false)
@@ -174,7 +174,7 @@ class AddExperienceFragment : Fragment() {
                         setLoading(false)
                         Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show()
                     }
-                } else {
+                } ?: run {
                     val imageUrl = experience?.imageUrl
 
                     saveExperienceToFirestore(currentUser, review, rating, imageUrl)
