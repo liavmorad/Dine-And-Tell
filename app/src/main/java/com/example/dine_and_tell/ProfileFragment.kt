@@ -51,7 +51,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize with default view mode
         toggleEditMode(false)
 
         userViewModel.currentUser.observe(viewLifecycleOwner) { user ->
@@ -67,7 +66,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Initialize ActivityResultLauncher for image picking (Gallery)
         pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
@@ -77,7 +75,6 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // Initialize ActivityResultLauncher for taking picture (Camera)
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             if (bitmap != null) {
                 val uri = getImageUriFromBitmap(bitmap)
@@ -92,7 +89,6 @@ class ProfileFragment : Fragment() {
                 isEditMode = false
                 toggleEditMode(false)
                 Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
-                // Reset status to avoid re-triggering on config changes if needed, though LiveData handles this mostly
             } else {
                 Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show()
             }
@@ -109,7 +105,7 @@ class ProfileFragment : Fragment() {
             currentUser?.let { user ->
                 updateUI(user)
             }
-            selectedImageUri = null // Clear selected image
+            selectedImageUri = null
         }
 
         binding.saveButton.setOnClickListener {
@@ -172,7 +168,6 @@ class ProfileFragment : Fragment() {
 
     private fun updateUserAndFinish(updatedUser: User) {
         userViewModel.updateUser(updatedUser)
-        // Loading state will be cleared by status observer
     }
 
     private fun setLoading(isLoading: Boolean) {
@@ -204,10 +199,8 @@ class ProfileFragment : Fragment() {
         binding.profileUsername.isEnabled = inEditMode
 
         if (inEditMode) {
-            // Restore default EditText background when enabled
             binding.profileUsername.setBackgroundResource(android.R.drawable.edit_text)
         } else {
-            // Remove background (underline) when disabled
             binding.profileUsername.setBackgroundResource(android.R.color.transparent)
         }
 
@@ -237,7 +230,7 @@ class ProfileFragment : Fragment() {
         val stream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         stream.close()
-        // Use FileProvider to get a content URI, or just return the file URI if using internal storage for upload
+
         return Uri.fromFile(file)
     }
 

@@ -82,7 +82,6 @@ class AddExperienceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize ActivityResultLauncher for image picking (Gallery)
         pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.let { uri ->
@@ -94,7 +93,6 @@ class AddExperienceFragment : Fragment() {
             }
         }
 
-        // Initialize ActivityResultLauncher for taking picture (Camera)
         takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             if (bitmap != null) {
                 val uri = getImageUriFromBitmap(bitmap)
@@ -177,8 +175,8 @@ class AddExperienceFragment : Fragment() {
                         Toast.makeText(requireContext(), "Failed to upload image", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Use existing image URL if editing and no new image selected
                     val imageUrl = experience?.imageUrl
+
                     saveExperienceToFirestore(currentUser, review, rating, imageUrl)
                 }
             } else {
