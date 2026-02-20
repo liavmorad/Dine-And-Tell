@@ -30,7 +30,12 @@ class UserViewModel : ViewModel() {
 
     fun updateUser(user: User) {
         viewModelScope.launch {
-            repository.updateUser(user)
+            try {
+                repository.updateUser(user)
+                _status.value = true
+            } catch (e: Exception) {
+                _status.value = false
+            }
         }
     }
 
