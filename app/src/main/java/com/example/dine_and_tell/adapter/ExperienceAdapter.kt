@@ -12,13 +12,14 @@ import com.squareup.picasso.Picasso
 class ExperienceAdapter(
     private var experiences: List<Experience>,
     private val currentUserId: String? = null,
+    private val showUserNameInTitle: Boolean = false,
     private val onEditClicked: ((Experience) -> Unit)? = null
 ) : RecyclerView.Adapter<ExperienceAdapter.ExperienceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExperienceViewHolder {
         val binding =
             ExperienceCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ExperienceViewHolder(binding, currentUserId, onEditClicked)
+        return ExperienceViewHolder(binding, currentUserId, showUserNameInTitle, onEditClicked)
     }
 
     override fun onBindViewHolder(holder: ExperienceViewHolder, position: Int) {
@@ -35,11 +36,14 @@ class ExperienceAdapter(
     inner class ExperienceViewHolder(
         private val binding: ExperienceCardBinding,
         private val currentUserId: String?,
+        private val showUserNameInTitle: Boolean,
         private val onEditClicked: ((Experience) -> Unit)?
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(experience: Experience) {
-            if (experience.restaurantName.isNotEmpty()) {
+            if (showUserNameInTitle) {
+                binding.experienceTitle.text = "${experience.userName.ifEmpty { "Someone" }} says"
+            } else if (experience.restaurantName.isNotEmpty()) {
                 binding.experienceTitle.text = experience.restaurantName
             } else {
                 binding.experienceTitle.text = "My Review"

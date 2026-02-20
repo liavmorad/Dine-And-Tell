@@ -22,7 +22,11 @@ class RestaurantDetailsFragment : Fragment() {
 
     private val args: RestaurantDetailsFragmentArgs by navArgs()
     private lateinit var experienceAdapter: ExperienceAdapter
-    private val experienceViewModel: ExperienceViewModel by viewModels()
+    private val experienceViewModel: ExperienceViewModel by viewModels {
+        val database = com.example.dine_and_tell.database.AppDatabase.getDatabase(requireContext())
+        val repository = com.example.dine_and_tell.repository.ExperienceRepository.getInstance(database.experienceDao())
+        com.example.dine_and_tell.viewmodel.ExperienceViewModelFactory(repository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +64,7 @@ class RestaurantDetailsFragment : Fragment() {
         experienceAdapter = ExperienceAdapter(
             experiences = emptyList(),
             currentUserId = currentUserId,
+            showUserNameInTitle = true,
             onEditClicked = { experience ->
                 // Navigate to AddExperienceFragment in edit mode
                 val action = RestaurantDetailsFragmentDirections.actionRestaurantDetailsFragmentToAddExperienceFragment(

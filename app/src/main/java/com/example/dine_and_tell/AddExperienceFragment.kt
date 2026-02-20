@@ -32,7 +32,11 @@ import com.squareup.picasso.Picasso
 class AddExperienceFragment : Fragment() {
     private var _binding: FragmentAddExperienceBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: ExperienceViewModel by viewModels()
+    private val viewModel: ExperienceViewModel by viewModels {
+        val database = com.example.dine_and_tell.database.AppDatabase.getDatabase(requireContext())
+        val repository = com.example.dine_and_tell.repository.ExperienceRepository.getInstance(database.experienceDao())
+        com.example.dine_and_tell.viewmodel.ExperienceViewModelFactory(repository)
+    }
     private val args: AddExperienceFragmentArgs by navArgs()
     private var selectedImageUri: Uri? = null
     private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
@@ -208,19 +212,24 @@ class AddExperienceFragment : Fragment() {
                 review = review,
                 rating = rating,
                 imageUrl = imageUrl,
+                userName = experience.userName.ifEmpty { currentUser.displayName ?: "User" },
                 dateOfVisit = System.currentTimeMillis()
             )
 
             viewModel.updateExperience(updatedExperience)
+            Toast.makeText(context, "Experience updated!", Toast.LENGTH_SHORT).show()
+            findNavController().popBackStack()
         } else {
             val restaurantId = args.restaurantId ?: ""
             val restaurantName = args.restaurantName ?: ""
             val userId = currentUser.uid
+            val userName = currentUser.displayName ?: "User"
 
             val newExperience = Experience(
                 restaurantId = restaurantId,
                 restaurantName = restaurantName,
                 userId = userId,
+                userName = userName,
                 review = review,
                 rating = rating,
                 imageUrl = imageUrl,
