@@ -70,11 +70,6 @@ class ExperienceAdapter(
                 binding.imageProgress.visibility = View.GONE
             }
 
-            // Show edit icon if:
-            // 1. Edit callback is provided
-            // 2. Experience has an ID (saved in DB)
-            // 3. EITHER currentUserId is null (assume authorized context like MyExperiences)
-            //    OR experience.userId matches currentUserId
             val isOwner = currentUserId == null || experience.userId == currentUserId
             
             if (onEditClicked != null && experience.firestoreId != null && isOwner) {
